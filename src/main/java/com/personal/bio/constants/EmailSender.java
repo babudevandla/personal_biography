@@ -1,0 +1,324 @@
+package com.personal.bio.constants;
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.stereotype.Component;
+
+@Component
+public class EmailSender {
+	
+	
+	@SuppressWarnings("unused")
+	private static Logger logger = Logger.getLogger(EmailSender.class);
+	
+	public static String host;
+	
+	@Autowired
+	private JavaMailSender mailSender;
+	
+	//Email Credentials
+
+	@Value("${EmailContactus}")
+	private String contactus;
+	
+
+	
+	private void sendHtmlMail(final Email email) throws MessagingException {
+		boolean isHtml = true;
+		MimeMessage message = mailSender.createMimeMessage();
+		MimeMessageHelper helper = new MimeMessageHelper(message);
+		helper.setTo(email.getTo().toArray(new String[email.getTo().size()]));
+		helper.setReplyTo(email.getFrom());
+		helper.setFrom(email.getFrom());
+		helper.setSubject(email.getSubject());
+		helper.setText(email.getMessageText(), isHtml);
+		if (email.getCc().size() > 0) {
+			helper.setCc(email.getCc().toArray(new String[email.getCc().size()]));
+		}
+		mailSender.send(message);
+	}
+//
+//	public void sendUserRegisterConformation(final UsersDto users, final Email email, final VelocityEngine velocityEngine,final HttpServletRequest request){
+//		  
+//		MimeMessagePreparator preparator = new MimeMessagePreparator() {
+//			public void prepare(MimeMessage mimeMessage) throws Exception {
+//				Map<String, Object> model = new HashMap<String, Object>();
+//				MimeMessageHelper message = new MimeMessageHelper(mimeMessage,true);
+//				
+//				model.put("home", host);
+//				model.put("user",users);
+//				message.setTo(email.getMailto());
+//				message.setFrom(new InternetAddress(contactus));
+//				message.setSubject("User Registration Confirmation!");
+//				String body = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine,"welcomeUser.vm", "UTF-8", model);
+//				message.setText(body, true);
+//				FileSystemResource res = new FileSystemResource(new File(request.getServletContext().getRealPath("/resources/images/connectivity1.jpg")));
+//				message.addInline("cmpLogo", res);
+//			}
+//		};
+//		JavaMailSenderImpl mailSender2=(JavaMailSenderImpl) mailSender;
+//		mailSender2.setHost("smtp.gmail.com");
+//		mailSender2.setPort(587);
+//		mailSender2.setUsername("softiddev@gmail.com");
+//		mailSender2.setPassword("ganesh@softid");
+//		mailSender.send(preparator);
+//		System.out.println("Register successfully");
+//	}
+//
+//
+//	public boolean sendSubscriptionMail(final Email email, final UserSubscribeVo userSub,final VelocityEngine velocityEngine,final HttpServletRequest request) {
+//		MimeMessagePreparator preparator = new MimeMessagePreparator() {
+//			public void prepare(MimeMessage mimeMessage) throws Exception {
+//				Map<String, Object> model = new HashMap<String, Object>();
+//				MimeMessageHelper message = new MimeMessageHelper(mimeMessage,true);
+//				
+//				model.put("home", host);
+//				model.put("userName",userSub.getUserName());
+//				message.setTo(email.getMailto());
+//				message.setFrom(new InternetAddress(contactus));
+//				message.setSubject(email.getSubject());
+//				String body = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine,"user_subscribe.vm", "UTF-8", model);
+//				message.setText(body, true);
+//				FileSystemResource res = new FileSystemResource(new File(request.getServletContext().getRealPath("/resources/images/connectivity1.jpg")));
+//				message.addInline("cmpLogo", res);
+//			}
+//		};
+//		JavaMailSenderImpl mailSender2=(JavaMailSenderImpl) mailSender;
+//		mailSender2.setHost("smtp.gmail.com");
+//		mailSender2.setPort(587);
+//		mailSender2.setUsername("softiddev@gmail.com");
+//		mailSender2.setPassword("ganesh@softid");
+//		mailSender.send(preparator);
+//		System.out.println("User Subscribed successfully!");
+//		return true;
+//	}
+
+	
+
+	/** ContactUs sending EMAILS **//*
+	/* public void sendContactUsEmail(final Email email, final ContactUs contactUs,
+			final SmtpDetails smtp, final VelocityEngine velocityEngine, final HttpServletRequest request,final EmailTemplateContent emailTemplatesContent) {
+		MimeMessagePreparator preparator = new MimeMessagePreparator() {
+			public void prepare(MimeMessage mimeMessage) throws Exception {
+				Map<String, Object> model = new HashMap<String, Object>();
+				MimeMessageHelper message = new MimeMessageHelper(mimeMessage,true);
+				
+				String tableContent1 = emailTemplatesContent.getTemplateBody().replace("${firstName}", contactUs.getParentName());
+				String tableContent  = tableContent1.replace("${message}", contactUs.getMessage());
+				model.put("home", host);
+				model.put("tableBody", tableContent);
+				message.setTo(new InternetAddress(contactus));
+				message.setFrom(email.getFrom());
+				message.setSubject("contact Us");
+				String body = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine,"contactUsBody.vm", "UTF-8", model);
+				message.setText(body, true);
+				FileSystemResource res = new FileSystemResource(new File(request.getServletContext().getRealPath("/resources/users/images/site-logo.png")));
+				message.addInline("contactImg", res);
+			}
+		};
+		JavaMailSenderImpl mailSender2=(JavaMailSenderImpl) mailSender;
+		mailSender2.setHost(smtp.getHostname());
+		mailSender2.setPort(smtp.getPortno());
+		mailSender2.setUsername(smtp.getUsername());
+		mailSender2.setPassword(smtp.getPassword());
+		mailSender.send(preparator);
+		System.out.println("Contastus sent successfully");
+	}
+
+
+
+
+	*//** Tutor REGISTRATION EMAILS **//*
+	
+	public void sendUserRegisterConformation(final UserInfo userInfo, final VelocityEngine velocityEngine,final HttpServletRequest request,final EmailTemplateContent emailTemplatesContent,final SmtpDetails smtp){
+		  
+		MimeMessagePreparator preparator = new MimeMessagePreparator() {
+			public void prepare(MimeMessage mimeMessage) throws Exception {
+				Map<String, Object> model = new HashMap<String, Object>();
+				MimeMessageHelper message = new MimeMessageHelper(mimeMessage,true);
+				
+				String tableContent1 = emailTemplatesContent.getTemplateBody().replace("${email}", userInfo.getEmail());
+				tableContent1=tableContent1.replace("${userName}", userInfo.getFirstname()+" "+userInfo.getLastname());
+				model.put("home", host);
+				model.put("user",userInfo);
+				model.put("tableBody", tableContent1);
+				message.setTo(userInfo.getEmail());
+				message.setFrom(new InternetAddress(contactus));
+				message.setSubject(emailTemplatesContent.getTemplateSubject());
+				String body = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine,"GenerateRegistrationUserConformation.vm", "UTF-8", model);
+				message.setText(body, true);
+				FileSystemResource res = new FileSystemResource(new File(request.getServletContext().getRealPath("/resources/users/images/site-logo.png")));
+				message.addInline("contactImg", res);
+			}
+		};
+		JavaMailSenderImpl mailSender2=(JavaMailSenderImpl) mailSender;
+		mailSender2.setHost(smtp.getHostname());
+		mailSender2.setPort(smtp.getPortno());
+		mailSender2.setUsername(smtp.getUsername());
+		mailSender2.setPassword(smtp.getPassword());
+		mailSender.send(preparator);
+		System.out.println("Register successfully");
+	}
+
+	*//** Tutor Test Qualified EMAILS **//*
+	public void testQualifiedUser(final UserInfo user, final MessageDto messageDto,final VelocityEngine velocityEngine2,final HttpServletRequest request,final EmailTemplateContent emailTemplatesContent,final SmtpDetails smtp) {
+		MimeMessagePreparator preparator = new MimeMessagePreparator() {
+			public void prepare(MimeMessage mimeMessage) throws Exception {
+				Map<String, Object> model = new HashMap<String, Object>();
+				MimeMessageHelper message = new MimeMessageHelper(mimeMessage,true);
+				
+				String tableContent1 = emailTemplatesContent.getTemplateBody().replace("${userName}", user.getFirstname()+" "+user.getLastname());
+				tableContent1=tableContent1.replace("${marks}",messageDto.getMarks().toString());
+				model.put("home", host);
+				model.put("user",user);
+				model.put("tableBody", tableContent1);
+				message.setTo(user.getEmail());
+				message.setFrom(new InternetAddress(contactus));
+				message.setSubject(emailTemplatesContent.getTemplateSubject());
+				String body = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine,"testQualifiedUser.vm", "UTF-8", model);
+				message.setText(body, true);
+				FileSystemResource res = new FileSystemResource(new File(request.getServletContext().getRealPath("/resources/users/images/site-logo.png")));
+				message.addInline("contactImg", res);
+			}
+		};
+		JavaMailSenderImpl mailSender2=(JavaMailSenderImpl) mailSender;
+		mailSender2.setHost(smtp.getHostname());
+		mailSender2.setPort(smtp.getPortno());
+		mailSender2.setUsername(smtp.getUsername());
+		mailSender2.setPassword(smtp.getPassword());
+		mailSender.send(preparator);
+		System.out.println("Email send successfully");
+	}
+
+
+
+
+	*//** Tutor Test Failure EMAILS **//*
+	public void testFailureUser(final UserInfo user,final MessageDto messageDto,final VelocityEngine velocityEngine2,final HttpServletRequest request,final EmailTemplateContent emailTemplatesContent,final SmtpDetails smtp) {
+		
+		MimeMessagePreparator preparator = new MimeMessagePreparator() {
+			public void prepare(MimeMessage mimeMessage) throws Exception {
+				Map<String, Object> model = new HashMap<String, Object>();
+				MimeMessageHelper message = new MimeMessageHelper(mimeMessage,true);
+				
+				String tableContent1 = emailTemplatesContent.getTemplateBody().replace("${userName}", user.getFirstname()+" "+user.getLastname());
+				tableContent1=tableContent1.replace("${marks}",messageDto.getMarks().toString());
+				model.put("home", host);
+				model.put("user",user);
+				model.put("tableBody", tableContent1);
+				message.setTo(user.getEmail());
+				message.setFrom(new InternetAddress(contactus));
+				message.setSubject(emailTemplatesContent.getTemplateSubject());
+				String body = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine,"GenerateRegistrationUserConformation.vm", "UTF-8", model);
+				message.setText(body, true);
+				FileSystemResource res = new FileSystemResource(new File(request.getServletContext().getRealPath("/resources/users/images/site-logo.png")));
+				message.addInline("contactImg", res);
+			}
+		};
+		JavaMailSenderImpl mailSender2=(JavaMailSenderImpl) mailSender;
+		mailSender2.setHost(smtp.getHostname());
+		mailSender2.setPort(smtp.getPortno());
+		mailSender2.setUsername(smtp.getUsername());
+		mailSender2.setPassword(smtp.getPassword());
+		mailSender.send(preparator);
+		System.out.println("Email send successfully");
+		
+	}
+
+
+	*//** Student REGISTRATION Success EMAILS **//*
+	public void sendStudentRegisterConformation(final StudentInformationDto studentInformationDto,final VelocityEngine velocityEngine2,final HttpServletRequest request,final EmailTemplateContent emailTemplatesContent,final SmtpDetails smtp) {
+		MimeMessagePreparator preparator = new MimeMessagePreparator() {
+			public void prepare(MimeMessage mimeMessage) throws Exception {
+				Map<String, Object> model = new HashMap<String, Object>();
+				MimeMessageHelper message = new MimeMessageHelper(mimeMessage,true);
+				
+				String tableContent1 = emailTemplatesContent.getTemplateBody().replace("${email}", studentInformationDto.getEmail());
+				tableContent1=tableContent1.replace("${userName}", studentInformationDto.getFirstname()+" "+studentInformationDto.getLastname());
+				model.put("home", host);
+				model.put("user",studentInformationDto);
+				model.put("tableBody", tableContent1);
+				message.setTo(studentInformationDto.getEmail());
+				message.setFrom(new InternetAddress(contactus));
+				message.setSubject(emailTemplatesContent.getTemplateSubject());
+				String body = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine,"StudentRegistrationSuccess.vm", "UTF-8", model);
+				message.setText(body, true);
+				FileSystemResource res = new FileSystemResource(new File(request.getServletContext().getRealPath("/resources/users/images/site-logo.png")));
+				message.addInline("contactImg", res);
+			}
+		};
+		JavaMailSenderImpl mailSender2=(JavaMailSenderImpl) mailSender;
+		mailSender2.setHost(smtp.getHostname());
+		mailSender2.setPort(smtp.getPortno());
+		mailSender2.setUsername(smtp.getUsername());
+		mailSender2.setPassword(smtp.getPassword());
+		mailSender.send(preparator);
+		System.out.println("Register successfully");
+		
+	}
+
+	*//** Student Schedule Conformation EMAILS **//*
+	public void sendStudentScheduleConformation(final StudentInformationDto studentInfo, final VelocityEngine velocityEngine2,final HttpServletRequest request,final EmailTemplateContent emailTemplatesContent,final SmtpDetails smtp) {
+		MimeMessagePreparator preparator = new MimeMessagePreparator() {
+			public void prepare(MimeMessage mimeMessage) throws Exception {
+				Map<String, Object> model = new HashMap<String, Object>();
+				MimeMessageHelper message = new MimeMessageHelper(mimeMessage,true);
+				
+				String tableContent1 = emailTemplatesContent.getTemplateBody().replace("${scheduleDate}", studentInfo.getStudentScheduleDate());
+				String tableContent2=tableContent1.replace("${schedulestartTime}",studentInfo.getStudentscheduleFromTime());
+				String tableContent3 = tableContent2.replace("${scheduleendTime}", studentInfo.getStudentscheduleToime());
+				String tableContent4 = tableContent3.replace("${tutorName}", studentInfo.getFirstname()+" "+studentInfo.getLastname());
+				model.put("home", host);
+				model.put("tableBody", tableContent4);
+				message.setTo(studentInfo.getStudentEmail());
+				message.setFrom(new InternetAddress(contactus));
+				message.setSubject(emailTemplatesContent.getTemplateSubject());
+				String body = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine,"GenerateStudentScheduleConformation.vm", "UTF-8", model);
+				message.setText(body, true);
+				FileSystemResource res = new FileSystemResource(new File(request.getServletContext().getRealPath("/resources/users/images/site-logo.png")));
+				message.addInline("studentScheduleImg", res);
+			}
+		};
+		JavaMailSenderImpl mailSender2=(JavaMailSenderImpl) mailSender;
+		mailSender2.setHost(smtp.getHostname());
+		mailSender2.setPort(smtp.getPortno());
+		mailSender2.setUsername(smtp.getUsername());
+		mailSender2.setPassword(smtp.getPassword());
+		mailSender.send(preparator);
+		System.out.println("Email send successfully");
+		
+		
+	}
+
+	*//** User Reset Password After enter six times wrong EMAILS **//*
+	public void sendResetPasswordEmail(final String userName, final String url,final SmtpDetails smtp,final  EmailTemplateContent emailTemplatesContent,final ServletContext context) {
+		MimeMessagePreparator preparator = new MimeMessagePreparator() {
+			public void prepare(MimeMessage mimeMessage) throws Exception {
+				Map<String, Object> model = new HashMap<String, Object>();
+				MimeMessageHelper message = new MimeMessageHelper(mimeMessage,true);
+				String tableContent1 = emailTemplatesContent.getTemplateBody().replace("${url}", url);
+				model.put("home", host);
+				model.put("tableBody", tableContent1);
+				message.setTo(userName);
+				message.setFrom(new InternetAddress(contactus));
+				message.setSubject(emailTemplatesContent.getTemplateSubject());
+				String body = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine,"GenerateResetPassword.vm", "UTF-8", model);
+				message.setText(body, true);
+				FileSystemResource res = new FileSystemResource(new File(context.getRealPath("/resources/users/images/site-logo.png")));
+				message.addInline("resetImg", res);
+			}
+		};
+		JavaMailSenderImpl mailSender2=(JavaMailSenderImpl) mailSender;
+		mailSender2.setHost(smtp.getHostname());
+		mailSender2.setPort(smtp.getPortno());
+		mailSender2.setUsername(smtp.getUsername());
+		mailSender2.setPassword(smtp.getPassword());
+		mailSender.send(preparator);
+		System.out.println("Email send successfully");
+	}*/
+}
